@@ -1,0 +1,27 @@
+#student-table {
+    max-height: 400px;
+    overflow: scroll;
+}
+
+th,
+tr {
+    width: 33%;
+}
+
+.present {
+    color: black;
+    font-style: italic;
+
+    background-color: coral;
+}
+
+.absent {
+    color: darkslategray;
+    font-weight: bold;
+    background-color: aliceblue;
+}
+
+/* Hide the app till everything loads up first, the app wont load till everything loads first*/
+[v-cloak] {
+    display: none;
+}

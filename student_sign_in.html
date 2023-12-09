@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Student Sign In</title>
+  <script src="https://unpkg.com/vue@next"></script>
+  <link
+          rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous"
+  />
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+</head>
+
+<body>
+<div id="app" v-cloak>
+  <!-- TODO show errors from form validation -->
+  <div class="alert alert-danger" v-if="errors.length > 0">
+    <ul>
+      <li v-for="error in errors">{{error}}</li>
+    </ul>
+  </div>
+
+  <div class="card add-student m-2 p-2">
+    <h4 class="card-title">Add new student</h4>
+
+    <div class="form-group">
+      <label for="name">Name</label>
+      <!-- V-model allows global access to modified or edited data when changed or not AND trim get rid of empty white spaces -->
+      <!-- TODO v-model newStudentName -->
+      <input id="name" class="form-control" v-model.trim="newStudentName" />
+    </div>
+    <div class="form-group">
+      <label for="starID">Star ID</label>
+      <!-- TODO v-model newStarID -->
+      <input id="starID" class="form-control" v-model.trim="newStarID" />
+    </div>
+    <!-- TODO v-on:click event handler -->
+    <button class="btn btn-primary" v-on:click="addStudent">Add</button>
+  </div>
+
+  <div class="card student-list m-2 p-2">
+    <h4 class="card-title">Student List</h4>
+    <div id="student-table">
+      <table class="table">
+        <tr>
+          <th>Name</th>
+          <th>StarID</th>
+          <th>Present?</th>
+        </tr>
+
+        <!-- TODO create table rows
+               Each row will have a checkbox, bound to the app's data
+               When the checkbox is checked/unchecked, the student will be signed in/out -->
+
+        <!-- You can also bind css properties to data as well through V-bind:class -->
+        <tr
+                v-for="student in students"
+                v-bind:class="{present: student.present , absent : !student.present}"
+        >
+          <td>{{student.name}}</td>
+          <td>{{student.starID}}</td>
+          <td>
+            <input
+                    type="checkbox"
+                    v-model="student.present"
+                    v-on:change="arrivedOrLeft(student)"
+            />
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- TODO show a message when student arrives or leaves  -->
+  <div v-if="mostRecent.name">
+    <!-- Arrived -->
+    <div class="alert alert-info" v-if="mostRecent.present">
+      Welcome, {{mostRecent.name}}
+    </div>
+
+    <!-- Left -->
+    <div class="alert alert-success" v-else>
+      Goodbye, {{mostRecent.name}}, see you later!
+    </div>
+  </div>
+</div>
+
+<script>
+  // TODO Vue app
+  let app = Vue.createApp({
+    data() {
+      return {
+        newStudentName: '',
+        newStarID: '',
+
+        students: [
+          { name: 'A. student', starID: 'afsaf3r2', present: false },
+          { name: 'B. student', starID: 'bfsdsff3r2', present: false },
+          { name: 'C. student', starID: 'cffasaf3r2', present: true },
+        ],
+        errors: [],
+
+        mostRecent: {}, // recent student left
+      };
+    },
+    methods: {
+      addStudent() {
+        this.errors = []; // clear errors array
+
+        if (!this.newStudentName) {
+          this.errors.push('Student name required');
+        }
+
+        if (!this.newStarID) {
+          this.errors.push('Student starID required');
+        }
+
+        // If there is a student name and star id
+        if (this.errors.length == 0) {
+          let student = {
+            name: this.newStudentName,
+            starID: this.newStarID,
+            present: false,
+          };
+
+          this.students.push(student);
+
+          this.students.sort(function (s1, s2) {
+            // Return positive number if s1 should bee sorted after s2
+            if (s1.name.toUpperCase() > s2.name.toUpperCase()) {
+              return 1;
+            }
+            // negative if s1 before s2
+            if (s1.name.toUpperCase() < s2.name.toUpperCase()) {
+              return -1;
+            }
+
+            // 0 if order is equivalent
+            return 0;
+          });
+
+          // Reset fields
+          this.newStudentName = '';
+          this.newStarID = '';
+        }
+      },
+      arrivedOrLeft(student) {
+        this.mostRecent = student;
+      },
+    },
+  });
+
+  app.mount('#app');
+</script>
+</body>
+</html>
